@@ -25,4 +25,5 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     // IgnoreCase: ignora diferenças entre letras maiúsculas e minúsculas.
     // List<Cliente>: retorna uma lista de clientes encontrados.
     List<Cliente> findByNomeContainingIgnoreCase(String nome);
+
 }

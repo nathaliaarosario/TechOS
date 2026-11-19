@@ -27,4 +27,7 @@ public interface EquipamentoRepository extends JpaRepository<Equipamento, Long> 
     // Verifica se outro equipamento utiliza esse número de série.
     // O ID permite desconsiderar o próprio equipamento durante uma edição.
     boolean existsByNumeroSerieAndIdNot(String numeroSerie, Long id);
+
+     boolean existsByClienteId(Long clienteid);
 }
+

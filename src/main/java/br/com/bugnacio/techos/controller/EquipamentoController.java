@@ -26,20 +26,22 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 
-//Prefixo de URL de todos os metodos da classe:"/equipamentos".
-//"Ex:@GetMapping("/novo") -> URL: "/euqipamentos/novo"
+// Prefixo de URL de todos os metodos da classe:"/equipamentos".
+// "Ex:@GetMapping("/novo") -> URL: "/euqipamentos/novo"
 @RequestMapping("/equipamentos")
 public class EquipamentoController {
 
     // --- ATRIBUTOS(as ferramentas do controller)
     // --repo é variavel do tipo EquipamentoRepository, que acessa o banco de dados.
-    // o objeto real que fica nela é criado pelo Spring(ele gera a implementação sozinho).
-    //private: só recebe esta classe acessa. Final: depois de criado não muda mais(não pode receber outro objeto).
-    // Por enquanto o repo está vazio, quem precisa preencher é o contrutor logo abaixo:
+    // o objeto real que fica nela é criado pelo Spring(ele gera a implementação
+    // sozinho).
+    // private: só recebe esta classe acessa. Final: depois de criado não muda
+    // mais(não pode receber outro objeto).
+    // Por enquanto o repo está vazio, quem precisa preencher é o contrutor logo
+    // abaixo:
     private final EquipamentoRepository repo;
-    //Construtor: recebeo repo do Spring e guardaem uma variavel a cima
+    // Construtor: recebeo repo do Spring e guardaem uma variavel a cima
     private final ClienteRepository Clienterepo;
-
 
     public EquipamentoController(EquipamentoRepository repo, ClienteRepository Clienterepo) {
         this.repo = repo;
@@ -67,7 +69,7 @@ public class EquipamentoController {
         } else {
 
             equipamentos = repo.findAll(
-            Sort.by("marca").ascending().and(Sort.by("modelo").ascending()));
+                    Sort.by("marca").ascending().and(Sort.by("modelo").ascending()));
         }
 
         model.addAttribute("equipamentos", equipamentos);
@@ -96,10 +98,12 @@ public class EquipamentoController {
         boolean novoCadastro = equipamento.getId() == null;
 
         // Verifica se o número de série já está cadastrado.
-        boolean jaExiste = novoCadastro? repo.existsByNumeroSerie(equipamento.getNumeroSerie()): repo.existsByNumeroSerieAndIdNot(equipamento.getNumeroSerie(), equipamento.getId());
+        boolean jaExiste = novoCadastro ? repo.existsByNumeroSerie(equipamento.getNumeroSerie())
+                : repo.existsByNumeroSerieAndIdNot(equipamento.getNumeroSerie(), equipamento.getId());
 
         // Impede o cadastro de números de série repetidos.
-        if (jaExiste) {result.rejectValue("numeroSerie", "duplicado","Número de série já cadastrado.");
+        if (jaExiste) {
+            result.rejectValue("numeroSerie", "duplicado", "Número de série já cadastrado.");
         }
 
         // Se houver erros, retorna ao formulário.
@@ -111,14 +115,16 @@ public class EquipamentoController {
 
         // Recupera o cliente cadastrado no banco.
         Long clienteId = equipamento.getCliente().getId();
-        Cliente cliente = Clienterepo.findById(clienteId).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+        Cliente cliente = Clienterepo.findById(clienteId)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
         equipamento.setCliente(cliente);
 
         // Salva o equipamento.
         repo.save(equipamento);
 
-        redirect.addFlashAttribute("mensagem", novoCadastro ? "Equipamento cadastrado com sucesso!": "Equipamento atualizado com sucesso!");
+        redirect.addFlashAttribute("mensagem",
+                novoCadastro ? "Equipamento cadastrado com sucesso!" : "Equipamento atualizado com sucesso!");
 
         return "redirect:/equipamentos";
     }
@@ -140,15 +146,10 @@ public class EquipamentoController {
     }
 
     @PostMapping("/{id}/excluir")
-    public String excluir(
-            @PathVariable("id") Long id,
-            RedirectAttributes redirect) {
+    public String excluir(@PathVariable("id") Long id, RedirectAttributes redirect) {
 
         repo.deleteById(id);
-
-        redirect.addFlashAttribute(
-                "mensagem", "Equipamento excluído com sucesso!");
-
+        redirect.addFlashAttribute("mensagem", "Equipamento excluído com sucesso!");
         return "redirect:/equipamentos";
     }
 
